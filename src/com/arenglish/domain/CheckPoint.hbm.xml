@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.arenglish.domain">
+	<class name="CheckPoint" table="are_checkpoint_records" lazy="true">
+		<id name="checkpointId" column="are_checkpoint_id">
+			<generator class="native"></generator>
+		</id>
+		<!-- 
+			are_checkpoint_checkpoint_id(好像无用，随便->自增长)
+			are_checkpoint_checkpoint_index(关卡数)
+			are_checkpoint_checkpoint_name(关卡名称)
+		 -->
+		<property name="checkpointIndex" column="are_checkpoint_index"></property>
+		<property name="checkpointName" column="are_checkpoint_name"></property>
+		
+		<set name="users" cascade="save-update" lazy="true" fetch="select" table="are_user_checkpoint_records">
+			<key column="are_checkpoint_id"></key>
+			<many-to-many class="User" column="are_user_id"></many-to-many>
+		</set>
+		
+	</class>
+</hibernate-mapping>

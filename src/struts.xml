@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- #  struts.objectFactory = spring        将action交给spring容器
+			struts.objectFactory.spring.autoWire = name   spring负责装配action依赖
+	-->
+	<constant name="struts.objectFactory" value="spring"></constant>
+	<package name="servlet" namespace="/" extends="struts-default">
+		<!-- 整合方案二:class属性上填写spring中action对象的BeanName 
+		 		完全由spring管理action生命周期，包括Action的创建
+		 		注意:需要手动组装依赖属性
+		 -->
+		<action name="upload_*" class="uploadImageAction" method="{1}">
+			<result name="success">/success.html</result>
+		</action>
+		<action name="user_*" class="userAction" method="{1}">
+			
+		</action>
+	</package>
+</struts>
