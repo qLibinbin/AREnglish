@@ -96,6 +96,15 @@ public class UserServiceImpl implements UserService {
 		boolean flag = userDao.modifyCredit(userId,isIncrease,creditCount);
 		return flag;
 	}
+
+
+	public boolean containAccount(String receiver) {
+		User user = userDao.getUserByAccount(receiver);
+		if (user!=null && user.getUserAccount().equals(receiver)) {
+			return false;
+		}
+		return true;
+	}
 	
 	
 }

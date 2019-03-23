@@ -4,22 +4,29 @@ package com.arenglish.action;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.apache.struts2.ServletActionContext;
 
 import com.arenglish.domain.CheckPoint;
 import com.arenglish.domain.User;
 import com.arenglish.service.UserService;
+import com.arenglish.utils.MailUtil;
 import com.google.gson.Gson;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport{
 	
+	
+    
 	private User user;
 	private UserService userService;
 	/*
@@ -50,27 +57,61 @@ public class UserAction extends ActionSupport{
 		return null;
 	}
 	/*
+	 * @parameter:
+	 * @Description:
+	 */
+	public String getCheckCode() throws Exception {
+		
+		
+		String receiver = ServletActionContext.getRequest().getParameter("email");
+		String checkCode;
+		Map<String, Object> session;
+		boolean states=false;
+		
+		states=userService.containAccount(receiver);
+		
+		checkCode=(int) ((Math.random()*9+1)*100000)+"";
+		session = ActionContext.getContext().getSession();
+		if (receiver!=null && checkCode.length()==6 && MailUtil.isEmail(receiver) && states) {
+			states = MailUtil.sendEmail(receiver, checkCode);
+			session.put("checkCode", checkCode);
+			session.put("email", receiver);
+		}
+		
+		ServletActionContext.getResponse().getWriter().write("{\"states\":\""+states+"\"}");
+		return null;
+	}
+	/*
 	 * @parameter: name,account,password,confirmPassword
 	 * @Description: get all userInfo
 	 */
-	public String registerTest() throws Exception {
+	public String register() throws Exception {
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
+		Map<String, Object> session = ActionContext.getContext().getSession();
 		PrintWriter out = ServletActionContext.getResponse().getWriter();
 		
 		String userName = request.getParameter("name");
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
 		String confirmPassword = request.getParameter("confirmPassword");
-		
+		String checkCode = request.getParameter("checkCode");
 		boolean states=false;
-		Gson gson=new Gson();
-		if (userName==null || account==null || password ==null || confirmPassword==null) {
-			out.write(gson.toJson(states));
+
+		if (session.get("checkCode")==null || session.get("email")==null) {
+			out.write("{\"states\":\""+states+"\"}");
+			return null;
+		}else if (!session.get("checkCode").equals(checkCode) || !session.get("email").equals(account)) {//验证码不对
+			out.write("{\"states\":\""+states+"\"}");
 			return null;
 		}
+		if (userName==null || account==null || password ==null || confirmPassword==null) {
+			out.write("{\"states\":\""+states+"\"}");
+			return null;
+		}
+		
 		if (!password.equals(confirmPassword)) {
-			out.write(gson.toJson(states));
+			out.write("{\"states\":\""+states+"\"}");
 			return null;
 		}
 		user=new User();
@@ -79,10 +120,9 @@ public class UserAction extends ActionSupport{
 		user.setUserPassword(password);
 		user.setUserCredit(0);
 		
-		if (userService.saveNewUser(user)) {
-			states=true;
-		}
-		out.write(gson.toJson(states));
+		states=userService.saveNewUser(user);
+		
+		out.write("{\"states\":\""+states+"\"}");
 		return null;
 		
 	}

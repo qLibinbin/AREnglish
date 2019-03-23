@@ -3,14 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <title>Register</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+
 </head>
 <body>
-	<form action="user_registerTest" method="post">
+	<form action="user_register" name="register" method="post">
 		昵称：    <input type="text" name="name"><br>
-		账号：    <input type="text" name="account"><br>
+		邮箱：    <input type="text" name="account" id="account"><br>
 		密码：    <input type="password" name="password"><br>
 		确认密码：<input type="password" name="confirmPassword"><br>
-		<input type="submit" value="注册">
+		验证码：<input type="text" name="checkCode"><br>
+		<input type="submit" value="注册"><br>
 	</form>
+	<br>
+	获取验证码测试
+	<br>
+	<form action="user_getCheckCode" method="post">
+		邮箱：    <input type="text" name="email" id="email"><br>
+		<input type="submit" value="获取验证码"></input>
+	</form>
+	
 </body>
+<script type="text/javascript">
+	function getCheckCode() {
+		alert("获取验证码");
+		alert($("#account").val());
+		var account=$("#account").val();
+		alert("6666");
+		$.ajax({
+            type: "POST",
+            url: "/user_getCheckCode",
+            data: "email":account,
+            dataType: "json",
+            success: function(data){
+            	alert("验证码已发送");    
+            }
+        });
+	}
+</script>
 </html>

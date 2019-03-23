@@ -1,6 +1,7 @@
 package com.arenglish.test;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.hibernate.HibernateException;
@@ -17,10 +18,11 @@ import com.arenglish.domain.User;
 public class Demo extends HibernateDaoSupport{
 	@Test
 	public void fun() {
-		for (int i = 0; i < 5; i++) {
-			System.out.println(UUID.randomUUID().toString().replaceAll("-", ""));
-		}
 		
+		for(int i=0;i<10;++i) {
+			int j=(int) ((Math.random()*9+1)*100000);
+			System.out.println(j);
+		}
 	}
 	@Test
 	public void addPassingCheckpoint() {
@@ -54,5 +56,6 @@ public class Demo extends HibernateDaoSupport{
 		
 		return ;
 	}
+
 
 }

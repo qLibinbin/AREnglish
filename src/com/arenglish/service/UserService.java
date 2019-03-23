@@ -21,4 +21,6 @@ public interface UserService {
 
 	boolean modifyCredit(String userId, boolean isIncrease, Integer creditCount);
 
+	boolean containAccount(String receiver);
+
 }
